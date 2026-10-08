@@ -50,8 +50,8 @@ public final class Configuracion {
 
     /** Valores por defecto: sobrescribir=false, gson, gson, dom, dom. */
     public static Configuracion porDefecto() {
-        return new Configuracion(false, TecnicaJson.GSON, TecnicaJson.GSON,
-                TecnicaLecturaXml.DOM, TecnicaEscrituraXml.DOM);
+        return new Configuracion(false, TecnicaJson.JACKSON, TecnicaJson.JACKSON,
+                TecnicaLecturaXml.JAXB, TecnicaEscrituraXml.JAXB);
     }
 
     public boolean isSobrescribir() {
