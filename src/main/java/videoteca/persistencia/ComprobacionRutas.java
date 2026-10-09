@@ -1,5 +1,6 @@
 package videoteca.persistencia;
 
+import java.nio.file.Files;
 import videoteca.excepciones.ExcepcionDirectorioNoExiste;
 import videoteca.excepciones.ExcepcionFicheroNoExiste;
 import videoteca.excepciones.ExcepcionOperacionCancelada;
@@ -30,9 +31,14 @@ public final class ComprobacionRutas {
      *   3. Si NO es un fichero (Files.isRegularFile) -> throw new ExcepcionFicheroNoExiste(fichero).
      *
      * TODO: implementar.
+     * @throws videoteca.excepciones.ExcepcionDirectorioNoExiste
      */
     public static void comprobarImportacion(Path fichero)
             throws ExcepcionDirectorioNoExiste, ExcepcionFicheroNoExiste {
+        //Esta parte la empecé por error pero falta
+        if(fichero.toAbsolutePath().getParent() == null){
+            throw new ExcepcionDirectorioNoExiste(fichero);
+        }
         throw new UnsupportedOperationException("TODO: comprobarImportacion (tarea 4)");
     }
 
@@ -47,10 +53,24 @@ public final class ComprobacionRutas {
      *
      * PISTAS: Files.exists, Files.isDirectory.
      *
+     * El objetivo teórico es asegurar que el entorno esté preparado para guardar un archivo nuevo, 
+     * confirmando que la ruta destino sea válida 
+     * y protegiendo los datos previos del usuario en caso de que ya exista un archivo con ese nombre.
+     * 
      * TODO: implementar.
      */
     public static void comprobarExportacion(Path fichero, boolean sobrescribir)
             throws ExcepcionDirectorioNoExiste, ExcepcionOperacionCancelada {
+        
+        if(!Files.isDirectory(//si es no es un directorio real
+                fichero.getParent())){
+        throw new ExcepcionDirectorioNoExiste(fichero);
+        }
+        
+        if(!Files.exists(fichero)){
+        //TODO quedé aquí Si no existe 
+        }
+        
         throw new UnsupportedOperationException("TODO: comprobarExportacion (tarea 1)");
     }
 }
