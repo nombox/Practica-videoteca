@@ -1,10 +1,12 @@
 package videoteca.persistencia;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import videoteca.modelo.Categoria;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import videoteca.modelo.Videoteca;
 
 /**
  * JSON con Gson o con Jackson.
@@ -85,7 +87,11 @@ public final class GestorJSON {
      * TODO: implementar (o dejar asi si eliges Gson).
      */
     public static void guardarCategoriasJSONJackson(List<Categoria> categorias, Path fichero) throws IOException {
-        throw new UnsupportedOperationException("Tecnica no implementada: Jackson (guardar)");
+        //lo tengo que meter en la clase Videoteca para que se guarde como objeto y no como lista 
+        Videoteca raiz = new Videoteca(categorias);
+        
+        ObjectMapper mapper = new ObjectMapper();  
+        mapper.writerWithDefaultPrettyPrinter().writeValue(fichero.toFile(), raiz);
     }
 
     /**
