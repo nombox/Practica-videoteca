@@ -53,6 +53,7 @@ public final class ComprobacionRutas {
      *
      * PISTAS: Files.exists, Files.isDirectory.
      *
+     * NOTA de Sebastian:
      * El objetivo teórico es asegurar que el entorno esté preparado para guardar un archivo nuevo, 
      * confirmando que la ruta destino sea válida 
      * y protegiendo los datos previos del usuario en caso de que ya exista un archivo con ese nombre.
@@ -62,15 +63,19 @@ public final class ComprobacionRutas {
     public static void comprobarExportacion(Path fichero, boolean sobrescribir)
             throws ExcepcionDirectorioNoExiste, ExcepcionOperacionCancelada {
         
+        //Para evitar cualquier null si el archivo llega sin carpeta base,
+        //Tal y como dice la Tarea 4 también en la importación. Lo implementé aquí también.
+        Path directorio = fichero.toAbsolutePath().getParent(); 
+        
         if(!Files.isDirectory(//si es no es un directorio real
-                fichero.getParent())){
-        throw new ExcepcionDirectorioNoExiste(fichero);
+                directorio)){
+            
+            throw new ExcepcionDirectorioNoExiste(directorio);
+        }
+        //hago el absolute path para verificar que exista previamente
+        if(Files.exists(fichero.toAbsolutePath())&& sobrescribir == false){
+            throw new ExcepcionOperacionCancelada(fichero);
         }
         
-        if(!Files.exists(fichero)){
-        //TODO quedé aquí Si no existe 
-        }
-        
-        throw new UnsupportedOperationException("TODO: comprobarExportacion (tarea 1)");
     }
 }

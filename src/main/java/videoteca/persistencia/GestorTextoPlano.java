@@ -1,10 +1,17 @@
 package videoteca.persistencia;
 
+//librerias de sebastian
+import java.io.BufferedWriter;
+import java.nio.file.Files;
+//----------------
+
 import videoteca.modelo.Categoria;
 
 import java.io.IOException;
+
 import java.nio.file.Path;
 import java.util.List;
+import videoteca.modelo.Pelicula;
 
 /**
  * Guardar y leer la videoteca en texto plano.
@@ -34,7 +41,17 @@ public final class GestorTextoPlano {
      * TODO: implementar.
      */
     public static void guardarCategoriasTexto(List<Categoria> categorias, Path fichero) throws IOException {
-        throw new UnsupportedOperationException("TODO: guardarCategoriasTexto (tarea 1)");
+
+        try(BufferedWriter bw = Files.newBufferedWriter(fichero)){
+            for(Categoria item: categorias){
+               //for para las categorias
+                bw.write(String.format("CATEGORIA;%d;%s%n",item.getId(),item.getNombre()));
+                for(Pelicula peli: item.getPeliculas()){
+                    //Segundo for para imprimir sus peliculas
+                    bw.write(String.format("PELICULA;%d;%s;%s;%d;%d%n",peli.getId(),peli.getTitulo(),peli.getDirector(),peli.getAnio(),peli.getDuracionMinutos()));
+                }
+        }
+        }
     }
 
     /**
