@@ -35,11 +35,16 @@ public final class ComprobacionRutas {
      */
     public static void comprobarImportacion(Path fichero)
             throws ExcepcionDirectorioNoExiste, ExcepcionFicheroNoExiste {
-        //Esta parte la empecé por error pero falta
-        if(fichero.toAbsolutePath().getParent() == null){
-            throw new ExcepcionDirectorioNoExiste(fichero);
-        }
-        throw new UnsupportedOperationException("TODO: comprobarImportacion (tarea 4)");
+      
+       Path directorio = fichero.toAbsolutePath().getParent();
+       
+       if(!Files.isDirectory(directorio)){
+           throw new ExcepcionDirectorioNoExiste(directorio);
+       }
+       
+       if(!Files.isRegularFile(fichero)){
+           throw new ExcepcionFicheroNoExiste(fichero);
+       }
     }
 
     /**
