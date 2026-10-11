@@ -5,6 +5,12 @@ import videoteca.modelo.Categoria;
 import java.nio.file.Path;
 import java.util.List;
 
+//Librerias importadas por Sebastian
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import videoteca.modelo.Videoteca;
+//----------------------------------
+
 /**
  * XML con SAX, JAXB o DOM.
  *
@@ -93,7 +99,17 @@ public final class GestorXML {
      * TODO: implementar o dejar asi si eliges DOM.
      */
     public static void guardarCategoriasXMLJAXB(List<Categoria> categorias, Path fichero) throws Exception {
-        throw new UnsupportedOperationException("Tecnica no implementada: JAXB (guardar)");
+        
+        //Creo la clase envoltorio
+        Videoteca videoteca = new Videoteca(categorias);
+        //Creo el contexto para que Jaxb conozca por reflexion las clases y sus atributos
+        JAXBContext context = JAXBContext.newInstance(Videoteca.class);
+        //Con el contexto creo la estructura de conversión
+        Marshaller marshaller = context.createMarshaller();
+        //convierto en formato legible con saltos de línea y demás
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        //Realizo la conversión y guardado
+        marshaller.marshal(videoteca, fichero.toFile());
     }
 
     // ------------------------------------------------------------ DOM
