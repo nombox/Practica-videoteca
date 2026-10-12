@@ -8,6 +8,7 @@ import java.util.List;
 //Librerias importadas por Sebastian
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import videoteca.modelo.Videoteca;
 //----------------------------------
 
@@ -89,7 +90,15 @@ public final class GestorXML {
      * TODO: implementar o dejar asi si eliges otra tecnica.
      */
     public static List<Categoria> obtenerCategoriasXMLJAXB(Path fichero) throws Exception {
-        throw new UnsupportedOperationException("Tecnica no implementada: JAXB (obtener)");
+        //Primero se crea el contexto
+        JAXBContext context = JAXBContext.newInstance(Videoteca.class);
+        //Luego se crea el unmarshaller en base a ese contexto 
+        Unmarshaller unmarshaller = context.createUnmarshaller();
+        //Luego se extrae la información y se castea a clase Videoteca por reflexión
+        Videoteca videoteca = (Videoteca) unmarshaller.unmarshal(fichero.toFile());
+        //Se devuelven las categorias
+        return videoteca.getCategorias();
+        
     }
 
     /**
