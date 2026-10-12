@@ -1,5 +1,6 @@
 package videoteca.persistencia;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import videoteca.modelo.Categoria;
 
@@ -76,6 +77,7 @@ public final class GestorJSON {
      * TODO: implementar (o dejar asi si eliges Jackson).
      */
     public static List<Categoria> obtenerCategoriasJSONGson(Path fichero) throws IOException {
+        
         throw new UnsupportedOperationException("Tecnica no implementada: Gson (obtener)");
     }
 
@@ -100,6 +102,10 @@ public final class GestorJSON {
      * TODO: implementar (o dejar asi si eliges Gson).
      */
     public static List<Categoria> obtenerCategoriasJSONJackson(Path fichero) throws IOException {
-        throw new UnsupportedOperationException("Tecnica no implementada: Jackson (obtener)");
+        ObjectMapper mapper = new ObjectMapper();
+        
+        Videoteca videoteca = mapper.readValue(fichero.toFile(), Videoteca.class);
+        
+        return videoteca.getCategorias();
     }
 }
