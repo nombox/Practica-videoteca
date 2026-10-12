@@ -12,10 +12,14 @@ import videoteca.persistencia.GestorTextoPlano;
 import videoteca.persistencia.GestorXML;
 
 import java.io.IOException;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+
+//Librerias de Sebastian
+import java.nio.file.Files;
 
 /**
  * La implementacion del contrato: la capa de NEGOCIO.
@@ -128,7 +132,30 @@ public class ServicioVideotecaImpl implements ServicioVideoteca {
      */
     @Override
     public String iniciar() {
-        throw new UnsupportedOperationException("TODO: iniciar (tarea 7)");
+        Path directorio = directorioConfig.resolve("conf.properties");
+        String mensaje = "Fichero de configuracion: " + directorio.toAbsolutePath().normalize();
+
+        //Si no existe
+        if (!Files.exists(directorio)) {
+            this.configuracion = Configuracion.porDefecto();
+            mensaje += "-> NO EXISTE.";
+            return mensaje;
+        }
+
+        //Si existe
+            try {
+
+                this.configuracion = Configuracion.cargar(directorio);
+                mensaje += "-> EXISTE. Opciones leídas.";    
+
+            } catch (IOException | ExcepcionDirectorioNoExiste | ExcepcionFicheroNoExiste | IllegalArgumentException ex) {
+                System.getLogger(ServicioVideotecaImpl.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+                this.configuracion = Configuracion.porDefecto();
+                mensaje += "-> EXISTE. Pero con error: " + ex.getMessage();
+            } 
+            
+        return mensaje;
+
     }
 
     /**
