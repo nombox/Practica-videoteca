@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+//importado por sebastian
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Una categoría de películas. Es el lado «1» de la relación 1 a N: contiene
  * su propia lista de {@link Pelicula}.
@@ -15,17 +18,22 @@ import java.util.Objects;
  * <p>Esta clase ya está terminada.</p>
  */
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Categoria {
 
-
+    @XmlAttribute
     private int id;
 
-
+    @XmlAttribute
     private String nombre;
 
-
+    @XmlElement(name = "pelicula")
     private List<Pelicula> peliculas = new ArrayList<>();
 
+    //Constructor vacío
+    public Categoria(){
+    
+    }
 
     public Categoria(int id, String nombre) {
         this.id = id;

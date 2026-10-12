@@ -14,10 +14,17 @@ import java.util.List;
  * elemento raíz. Esta clase ya está terminada.</p>
  */
 
+@XmlRootElement(name = "videoteca")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Videoteca {
 
-
+    @XmlElement(name = "categoria")
     private List<Categoria> categorias = new ArrayList<>();
+    
+    //Constructor vacío para Json
+    public Videoteca(){
+    
+    }
 
 
     public Videoteca(List<Categoria> categorias) {

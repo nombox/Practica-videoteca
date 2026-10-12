@@ -5,6 +5,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import java.util.Objects;
 
+//Importado por Sebastian
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Una película. Pertenece a una {@link Categoria} (relación 1 a N).
  *
@@ -12,23 +15,29 @@ import java.util.Objects;
  * GestorXML al escribir XML); GSON no necesita ninguna.</p>
  */
 
+
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Pelicula {
 
-
+    @XmlAttribute
     private int id;
 
-
+    @XmlAttribute
     private String titulo;
 
-
+    @XmlAttribute
     private String director;
 
-
+    @XmlAttribute
     private int anio;
 
-
+    @XmlAttribute
     private int duracionMinutos;
-
+    
+    //Constructor vacío
+    public Pelicula(){
+    
+    }
 
     public Pelicula(int id, String titulo, String director, int anio, int duracionMinutos) {
         this.id = id;
