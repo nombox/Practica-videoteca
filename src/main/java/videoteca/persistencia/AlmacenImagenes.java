@@ -1,9 +1,14 @@
 package videoteca.persistencia;
 
 import java.io.Closeable;
+//Librerías de Sebastian
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+//--------------------------
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -44,7 +49,14 @@ public class AlmacenImagenes implements Closeable {
      * TODO: implementar.
      */
     public void abrir() throws IOException {
-        throw new UnsupportedOperationException("TODO: AlmacenImagenes.abrir (tarea 8)");
+        try{
+            this.almacen = new RandomAccessFile(ficheroImagenes.toFile(),"r");
+            this.indice = cargarIndice();
+        }catch(IOException ex){
+            System.out.println("Error! " + ex.getMessage());//Revisar
+        }
+        
+       
     }
 
     /**
@@ -54,7 +66,14 @@ public class AlmacenImagenes implements Closeable {
      */
     @SuppressWarnings("unchecked")
     private Map<Integer, Integer> cargarIndice() throws IOException {
-        throw new UnsupportedOperationException("TODO: AlmacenImagenes.cargarIndice (tarea 8)");
+        Map<Integer, Integer> indice = null;
+        try(FileInputStream fis = new FileInputStream(ficheroIndice.toFile());
+            ObjectInputStream os = new ObjectInputStream(fis)){
+            indice = (Map<Integer, Integer>) os.readObject();
+        } catch (ClassNotFoundException ex) {
+            return indice;
+        }
+        return indice;
     }
 
     /**
@@ -70,7 +89,16 @@ public class AlmacenImagenes implements Closeable {
      * TODO: implementar.
      */
     public byte[] obtener(int idPelicula) throws IOException {
-        throw new UnsupportedOperationException("TODO: AlmacenImagenes.obtener (tarea 8)");
+         byte[] retorno=null;
+        if(indice.get(idPelicula)!=null){
+           try{
+              this.almacen.seek(idPelicula*TAMANO_REGISTRO);
+           } catch(IOException ex){
+            ex.printStackTrace();//Revisar
+           }
+        }
+        
+        return retorno;
     }
 
     @Override
