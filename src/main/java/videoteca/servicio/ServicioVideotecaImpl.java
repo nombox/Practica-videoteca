@@ -20,6 +20,7 @@ import java.util.List;
 
 //Librerias de Sebastian
 import java.nio.file.Files;
+import videoteca.persistencia.AlmacenImagenes;
 
 /**
  * La implementacion del contrato: la capa de NEGOCIO.
@@ -171,7 +172,28 @@ public class ServicioVideotecaImpl implements ServicioVideoteca {
      */
     @Override
     public byte[] obtenerImagen(int idPelicula) throws IOException {
-        throw new UnsupportedOperationException("TODO: obtenerImagen (tarea 8)");
+        Path ficheroImagenes = directorioConfig.resolve("imagenes.dat");
+        Path ficheroIndice = directorioConfig.resolve("indice.dat");
+
+        byte[]imagenPelicula = null;
+        
+        //Si las rutas no existen
+        if(!Files.exists(ficheroImagenes) || !Files.exists(ficheroIndice)){
+            return imagenPelicula;
+        }
+        
+        //Si existen
+        try(AlmacenImagenes almacen = new AlmacenImagenes(ficheroImagenes, ficheroIndice)){            
+            almacen.abrir();
+            imagenPelicula = almacen.obtener(idPelicula);
+        }
+        
+        return imagenPelicula;
+    }
+    
+    public Path obtenerFicheroRecursivo(Path fichero){
+        //Para la recursividad
+        return null;
     }
 
     /**

@@ -4,11 +4,11 @@ import java.io.Closeable;
 //Librerías de Sebastian
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
+import java.util.Arrays;
 //--------------------------
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -49,14 +49,10 @@ public class AlmacenImagenes implements Closeable {
      * TODO: implementar.
      */
     public void abrir() throws IOException {
-        try{
-            this.almacen = new RandomAccessFile(ficheroImagenes.toFile(),"r");
-            this.indice = cargarIndice();
-        }catch(IOException ex){
-            System.out.println("Error! " + ex.getMessage());//Revisar
-        }
-        
-       
+        //cualquier exception comoo FileNotFoundException heredará de IOException y subirá al UI
+        this.almacen = new RandomAccessFile(ficheroImagenes.toFile(), "r");
+        this.indice = cargarIndice();
+
     }
 
     /**
@@ -66,11 +62,13 @@ public class AlmacenImagenes implements Closeable {
      */
     @SuppressWarnings("unchecked")
     private Map<Integer, Integer> cargarIndice() throws IOException {
+
         Map<Integer, Integer> indice = null;
-        try(FileInputStream fis = new FileInputStream(ficheroIndice.toFile());
-            ObjectInputStream os = new ObjectInputStream(fis)){
+
+        try (FileInputStream fis = new FileInputStream(ficheroIndice.toFile()); ObjectInputStream os = new ObjectInputStream(fis)) {
             indice = (Map<Integer, Integer>) os.readObject();
-        } catch (ClassNotFoundException ex) {
+
+        } catch (IOException | ClassNotFoundException ex) {
             return indice;
         }
         return indice;
@@ -89,16 +87,32 @@ public class AlmacenImagenes implements Closeable {
      * TODO: implementar.
      */
     public byte[] obtener(int idPelicula) throws IOException {
-         byte[] retorno=null;
-        if(indice.get(idPelicula)!=null){
-           try{
-              this.almacen.seek(idPelicula*TAMANO_REGISTRO);
-           } catch(IOException ex){
-            ex.printStackTrace();//Revisar
-           }
+
+        //Clausula guardina también si el índice es null en el método cargarIndice()
+        if (this.indice == null || indice.get(idPelicula) == null) {
+            return null;
         }
-        
-        return retorno;
+
+        //Al tener el valor del bloque en el índice, primero busco en el propio índice ese bloque en base a la clave
+        int idValor = this.indice.get(idPelicula);
+
+        long posicion = (long) idValor * TAMANO_REGISTRO; //Busco la posición en el registro en base al slot de la imagen
+
+        this.almacen.seek(posicion);//Luego en base a esa ubicación la busco en el fichero .dat
+
+        byte[] retorno = new byte[TAMANO_REGISTRO];//Guardo el tamaño de cada registro en el array de bytes
+        this.almacen.readFully(retorno);//guardo la información de ese regisstro en el array
+
+        //Recorremos el Array
+        int tamanoRegistro = retorno.length;
+
+        while (tamanoRegistro > 0 && retorno[tamanoRegistro - 1] == 0) {
+            tamanoRegistro--;//Reduzco el tamaño del registro si es 0
+        }
+
+        //transformo el retorno a uno límpio sin 0 demás y lo devuelvo
+        return Arrays.copyOf(retorno, tamanoRegistro);
+
     }
 
     @Override
