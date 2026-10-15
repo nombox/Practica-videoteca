@@ -1,5 +1,6 @@
 package videoteca.servicio;
 
+
 import videoteca.excepciones.ExcepcionDirectorioNoExiste;
 import videoteca.excepciones.ExcepcionFicheroNoExiste;
 import videoteca.excepciones.ExcepcionOperacionCancelada;
@@ -21,41 +22,49 @@ import java.util.List;
 //Librerias de Sebastian
 import java.nio.file.Files;
 import videoteca.persistencia.AlmacenImagenes;
+import java.io.File;
 
 /**
  * La implementacion del contrato: la capa de NEGOCIO.
  *
  * Ya hechos: los constructores, listarCategorias(), exportar() e importar()
- * (que solo llaman a tus clases de persistencia). Los programas tu:
- *   - iniciar()                          (TAREA 7)
- *   - obtenerImagen()                    (TAREA 8)
- *   - crearCategoria() y crearPelicula() (TAREA 9)
+ * (que solo llaman a tus clases de persistencia). Los programas tu: - iniciar()
+ * (TAREA 7) - obtenerImagen() (TAREA 8) - crearCategoria() y crearPelicula()
+ * (TAREA 9)
  */
 public class ServicioVideotecaImpl implements ServicioVideoteca {
 
-    /** Los datos arrancan con el ejemplo, para poder exportar desde el primer minuto. */
+    /**
+     * Los datos arrancan con el ejemplo, para poder exportar desde el primer
+     * minuto.
+     */
     private List<Categoria> categorias = DatosEjemplo.crearVideoteca();
     private Configuracion configuracion;
     private final Path directorioConfig;
 
-    /** Usa la carpeta ./config (fija e inmutable). */
+    /**
+     * Usa la carpeta ./config (fija e inmutable).
+     */
     public ServicioVideotecaImpl() {
         this(Paths.get("./config"));
     }
 
-    /** Usa otra carpeta (la usa el Comprobador para probar sin tocar tu config). */
+    /**
+     * Usa otra carpeta (la usa el Comprobador para probar sin tocar tu config).
+     */
     public ServicioVideotecaImpl(Path directorioConfig) {
         this(directorioConfig, Configuracion.porDefecto());
     }
 
-    /** Igual, pero con una configuración ya hecha (la usa el Comprobador). */
+    /**
+     * Igual, pero con una configuración ya hecha (la usa el Comprobador).
+     */
     public ServicioVideotecaImpl(Path directorioConfig, Configuracion configuracion) {
         this.directorioConfig = directorioConfig;
         this.configuracion = configuracion;
     }
 
     // ------------------------------------------------------------------ ya hechos
-
     @Override
     public List<Categoria> listarCategorias() {
         return categorias;
@@ -112,22 +121,20 @@ public class ServicioVideotecaImpl implements ServicioVideoteca {
     }
 
     // ------------------------------------------------------------------ los programas tu
-
     /**
      * TAREA 7. Se llama UNA vez, al arrancar.
      *
-     * PASOS:
-     *   1. Ruta del fichero: directorioConfig.resolve("conf.properties").
-     *      Construye el mensaje con la RUTA ABSOLUTA (toAbsolutePath().normalize()).
-     *   2. Si EXISTE -> Configuracion.cargar(...), guardala en el atributo "configuracion"
-     *      y el mensaje contiene la palabra EXISTE.
-     *   3. Si NO existe -> Configuracion.porDefecto() y el mensaje contiene NO EXISTE.
-     *   4. Si existe pero falla al leerla -> valores por defecto; el mensaje contiene EXISTE
-     *      y el motivo del error.
-     *   5. iniciar() NUNCA lanza excepciones: todo problema va DENTRO del mensaje.
+     * PASOS: 1. Ruta del fichero: directorioConfig.resolve("conf.properties").
+     * Construye el mensaje con la RUTA ABSOLUTA (toAbsolutePath().normalize()).
+     * 2. Si EXISTE -> Configuracion.cargar(...), guardala en el atributo
+     * "configuracion" y el mensaje contiene la palabra EXISTE. 3. Si NO existe
+     * -> Configuracion.porDefecto() y el mensaje contiene NO EXISTE. 4. Si
+     * existe pero falla al leerla -> valores por defecto; el mensaje contiene
+     * EXISTE y el motivo del error. 5. iniciar() NUNCA lanza excepciones: todo
+     * problema va DENTRO del mensaje.
      *
-     * Ejemplo de mensaje:
-     *   Fichero de configuracion: C:\proy\config\conf.properties -> EXISTE. Opciones leidas.
+     * Ejemplo de mensaje: Fichero de configuracion:
+     * C:\proy\config\conf.properties -> EXISTE. Opciones leidas.
      *
      * TODO: implementar.
      */
@@ -144,17 +151,17 @@ public class ServicioVideotecaImpl implements ServicioVideoteca {
         }
 
         //Si existe
-            try {
+        try {
 
-                this.configuracion = Configuracion.cargar(directorio);
-                mensaje += "-> EXISTE. Opciones leídas.";    
+            this.configuracion = Configuracion.cargar(directorio);
+            mensaje += "-> EXISTE. Opciones leídas.";
 
-            } catch (IOException | ExcepcionDirectorioNoExiste | ExcepcionFicheroNoExiste | IllegalArgumentException ex) {
-                System.getLogger(ServicioVideotecaImpl.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-                this.configuracion = Configuracion.porDefecto();
-                mensaje += "-> EXISTE. Pero con error: " + ex.getMessage();
-            } 
-            
+        } catch (IOException | ExcepcionDirectorioNoExiste | ExcepcionFicheroNoExiste | IllegalArgumentException ex) {
+            System.getLogger(ServicioVideotecaImpl.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            this.configuracion = Configuracion.porDefecto();
+            mensaje += "-> EXISTE. Pero con error: " + ex.getMessage();
+        }
+
         return mensaje;
 
     }
@@ -162,11 +169,11 @@ public class ServicioVideotecaImpl implements ServicioVideoteca {
     /**
      * TAREA 8. Devuelve la caratula de una pelicula, o null si no tiene.
      *
-     * PASOS:
-     *   1. Las rutas son directorioConfig.resolve("imagenes.dat") y ("indice.dat").
-     *   2. Si NO existe alguno de los dos ficheros -> return null (no es un error).
-     *   3. Si existen: AlmacenImagenes en un try-with-resources, abrir() y obtener(idPelicula).
-     *      Abre y cierra el almacen en cada operacion.
+     * PASOS: 1. Las rutas son directorioConfig.resolve("imagenes.dat") y
+     * ("indice.dat"). 2. Si NO existe alguno de los dos ficheros -> return null
+     * (no es un error). 3. Si existen: AlmacenImagenes en un
+     * try-with-resources, abrir() y obtener(idPelicula). Abre y cierra el
+     * almacen en cada operacion.
      *
      * TODO: implementar.
      */
@@ -175,55 +182,109 @@ public class ServicioVideotecaImpl implements ServicioVideoteca {
         Path ficheroImagenes = directorioConfig.resolve("imagenes.dat");
         Path ficheroIndice = directorioConfig.resolve("indice.dat");
 
-        byte[]imagenPelicula = null;
-        
+        byte[] imagenPelicula = null;
+
         //Si las rutas no existen
-        if(!Files.exists(ficheroImagenes) || !Files.exists(ficheroIndice)){
+        if (!Files.exists(ficheroImagenes) || !Files.exists(ficheroIndice)) {
             return imagenPelicula;
         }
-        
+
         //Si existen
-        try(AlmacenImagenes almacen = new AlmacenImagenes(ficheroImagenes, ficheroIndice)){            
+        try (AlmacenImagenes almacen = new AlmacenImagenes(ficheroImagenes, ficheroIndice)) {
             almacen.abrir();
             imagenPelicula = almacen.obtener(idPelicula);
         }
-        
+
         return imagenPelicula;
     }
-    
-    public Path obtenerFicheroRecursivo(Path fichero){
+    //Parametros Path directorio "config" y string nombreFichero "imagenes.dat" 
+    public Path obtenerFicheroRecursivo(File fichero) {
         //Para la recursividad
+        
+        
         return null;
     }
 
     /**
      * TAREA 9. Crea una categoria con un id nuevo y la guarda en memoria.
      *
-     * PASOS:
-     *   1. Si el nombre es null o esta en blanco -> IllegalArgumentException con mensaje claro.
-     *   2. id = GeneradorIds.siguienteIdCategoria(categorias)   (ya esta hecho).
-     *   3. new Categoria(id, nombre), anadela a "categorias" y devuelvela.
+     * PASOS: 1. Si el nombre es null o esta en blanco ->
+     * IllegalArgumentException con mensaje claro. 2. id =
+     * GeneradorIds.siguienteIdCategoria(categorias) (ya esta hecho). 3. new
+     * Categoria(id, nombre), anadela a "categorias" y devuelvela.
      *
      * TODO: implementar.
      */
     @Override
     public Categoria crearCategoria(String nombre) {
-        throw new UnsupportedOperationException("TODO: crearCategoria (tarea 9)");
+
+            if (nombre == null || nombre.isBlank()) {
+                throw new IllegalArgumentException("El nombre de la categoria no es válido");
+            }
+
+        int id = GeneradorIds.siguienteIdCategoria(categorias);
+
+        Categoria nuevaCategoria = new Categoria(id, nombre);
+        
+        categorias.add(nuevaCategoria);
+
+        return nuevaCategoria;
+
     }
 
     /**
-     * TAREA 9. Crea una pelicula con un id nuevo, dentro de la categoria indicada.
+     * TAREA 9. Crea una pelicula con un id nuevo, dentro de la categoria
+     * indicada.
      *
-     * PASOS:
-     *   1. Si falta el titulo -> IllegalArgumentException.
-     *   2. Busca la categoria por su id. Si NO existe -> IllegalArgumentException.
-     *   3. id = GeneradorIds.siguienteIdPelicula(categorias)   (ya esta hecho).
-     *   4. Crea la Pelicula, anadela A ESA CATEGORIA (getPeliculas().add(...)) y devuelvela.
+     * PASOS: 1. Si falta el titulo -> IllegalArgumentException. 2. Busca la
+     * categoria por su id. Si NO existe -> IllegalArgumentException. 3. id =
+     * GeneradorIds.siguienteIdPelicula(categorias) (ya esta hecho). 4. Crea la
+     * Pelicula, anadela A ESA CATEGORIA (getPeliculas().add(...)) y devuelvela.
      *
      * TODO: implementar.
      */
     @Override
     public Pelicula crearPelicula(int idCategoria, String titulo, String director, int anio, int duracionMinutos) {
-        throw new UnsupportedOperationException("TODO: crearPelicula (tarea 9)");
+        //Tipo id
+        int id = 0;
+        //Tipo retorno
+        Pelicula peliculaRetorno = null;
+
+        //Si el título no existe
+
+            if (titulo == null || titulo.isBlank()) {
+                throw new IllegalArgumentException("No has indicado el titulo");
+            }
+            //Clase categoria para recuperarla fuera del for
+            Categoria categoriaRecuperada = null;
+            //Busco en categorias con un for
+            for (Categoria categoriaActual : categorias) {
+
+                if (categoriaActual.getId() == idCategoria) {
+                    //las igualo como objeto
+                    categoriaRecuperada = categoriaActual;
+                    //Salgo del bucle
+                    break;
+
+                }
+            }
+            
+            //Si nunca se encontró la categoria
+            if (categoriaRecuperada == null) {
+                throw new IllegalArgumentException("El id de la categoria no es el correcto");
+            }
+
+            //Si todo sale bien...
+            //genero un id para la siguiente pelicula
+            id = GeneradorIds.siguienteIdPelicula(categorias);
+            //Creo una pelicula con ese id nuevo y los parametros
+            peliculaRetorno = new Pelicula(id, titulo, director, anio, duracionMinutos);
+            //La guardo en esa categoria
+            categoriaRecuperada.getPeliculas().add(peliculaRetorno);
+
+        
+        //Devuelvo la película
+        return peliculaRetorno;
+
     }
 }
