@@ -179,8 +179,8 @@ public class ServicioVideotecaImpl implements ServicioVideoteca {
      */
     @Override
     public byte[] obtenerImagen(int idPelicula) throws IOException {
-        Path ficheroImagenes = directorioConfig.resolve("imagenes.dat");
-        Path ficheroIndice = directorioConfig.resolve("indice.dat");
+        Path ficheroImagenes = obtenerFicheroRecursivo(directorioConfig.toFile(), "imagenes.dat");
+        Path ficheroIndice = obtenerFicheroRecursivo(directorioConfig.toFile(), "indice.dat");
 
         byte[] imagenPelicula = null;
 
@@ -197,12 +197,46 @@ public class ServicioVideotecaImpl implements ServicioVideoteca {
 
         return imagenPelicula;
     }
-    //Parametros Path directorio "config" y string nombreFichero "imagenes.dat" 
-    public Path obtenerFicheroRecursivo(File fichero) {
+    
+    //Parametros File directorio "config" y string nombreFichero "imagenes.dat" 
+    public Path obtenerFicheroRecursivo(File directorio, String nombreFichero) {
+        Path fichero = null;
+
+        //CASO 1: cuando lo que encuentras está vacío o no es un directorio
         //Para la recursividad
-        
-        
-        return null;
+        if (directorio == null || !directorio.isDirectory()) {
+            return fichero; //error, no es ni directorio o está vacío
+        }
+
+        //Si no es el fichero que buscas crea un listado de los ficheros y directorios que tiene ese directorio
+        File[] elementos = directorio.listFiles();
+        if (elementos == null) {
+            return fichero;//Caso base: Si es un directorio que está vacío sal del bucle
+        }
+        //Hacemos un for para recorrer los elementos internos
+        for (File elemento : elementos) {
+            //CASO 2: que sea un fichero
+            if (elemento.isFile()) {
+                //Verifico si ese elemento es imagen.dat o indice.dat
+                if (elemento.getName().equals(nombreFichero)) {
+                    //Si es así lo retorno
+                    fichero = elemento.toPath();
+                    return fichero;
+                }
+            } else {
+                //CASO 3: que sea otro directorio
+                fichero = obtenerFicheroRecursivo(elemento, nombreFichero); //Si es un directorio me adentro en él
+
+                //si ese directorio no es null significa que tiene dentro un directorio y lo devuelvo como un path
+                if (fichero != null) {
+                    return fichero;
+                }
+
+            }
+        }
+
+        return fichero;
+
     }
 
     /**
